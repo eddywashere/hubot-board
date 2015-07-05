@@ -2,7 +2,7 @@
 
 var patterns = {};
 
-patterns.scriptPrefix = process.env.HUBOT_BOARD_PREFIX || 'board';
+patterns.scriptPrefix = process.env.HUBOT_BOARD_PREFIX || '!board';
 patterns.repository = "([-_\.0-9a-z]+)";
 patterns.fullRepo = patterns.repository + "(?:\\/([^\\s]+))?";
 patterns.tags = "(?:[\\s])#([^\\s]+)";
@@ -80,6 +80,15 @@ patterns.list_issue = new RegExp(
   patterns.fullRepo +
   "(?:\\s+)?" +
   patterns.tags + patterns.endspace,
+  "i");
+
+patterns.milestoneNewIssueCmd = new RegExp(
+  "(" + patterns.scriptPrefix +
+  "(?:\\:[^\\s]+)?)\\s+" +
+  patterns.fullRepo +
+  "(?:\\s+)?(?:\([-_\.0-9a-z:]+))?(?:\\s+)?" +
+  "\\s+(?:!new)" +
+  "([^-]+)(?:-)(.*[^]+)\?",
   "i");
 
 module.exports = patterns;

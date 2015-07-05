@@ -2,18 +2,20 @@
 //   A lightweight kanban chat bot for working with github issues
 //
 // Configuration:
+//   HUBOT_BOARD_PREFIX=!board
 //   HUBOT_BOARD_DEFAULT_TOKEN=yourtoken
 //   HUBOT_BOARD_DEFAULT_USER=yourusername
 //   HUBOT_BOARD_DEFAULT_STATUSES=['1 - Ready', '2 - Working', '3 - Done']
 //
 // Commands:
-//   hubot board <user/repo> - shows default board (isssues labeled: ready, working, done)
-//   hubot board <user/repo> !(backlog|ready|working|done) - shows all backlog items
-//   hubot board <user/repo> !mine - shows all issues assigned to you
-//   hubot board <user/repo> !latest - shows latest issues for a repo
-//   hubot board <user/repo> <milestone:version> - shows board for the given milestone (ex: mile-stone-name:part-two)
-//   hubot board <user/repo> <milestone:version> !(backlog|ready|working|done) - show backlog issues for the given milestone
-//   hubot board <user/repo> <milestone:version> !mine - show issues assigned to you for the given milestone
+//   !board <user/repo> - shows default board (isssues labeled: ready, working, done)
+//   !board <user/repo> !(backlog|ready|working|done) - shows all backlog items
+//   !board <user/repo> !mine - shows all issues assigned to you
+//   !board <user/repo> !latest - shows latest issues for a repo
+//   !board <user/repo> <milestone:version> - shows board for the given milestone (ex: mile-stone-name:part-two)
+//   !board <user/repo> <milestone:version> !(backlog|ready|working|done) - show backlog issues for the given milestone
+//   !board <user/repo> <milestone:version> !mine - show issues assigned to you for the given milestone
+//   !board <user/repo> <milestone:version> !new <title, body> !assign <user> - create a new issue for a milestone
 // Notes:
 //   requires hubot-github-identity
 //
@@ -61,7 +63,7 @@ function findByStrings(items, prop, strings){
 module.exports = function(robot) {
 
   // 'board <user/repo>'
-  robot.respond(patterns.baseCmd, function(res) {
+  robot.hear(patterns.baseCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
 
@@ -82,8 +84,8 @@ module.exports = function(robot) {
       github.getBoardIssues(username, repo, null, null, function(err, issues){
         if(err){ return console.log(err)};
         var title = {
-          title: repo + ' - issue(s)',
-          html_url: 'https://github.com/' + username + '/' + repo
+          title: repo + ' - milestone issue(s)',
+          html_url: 'https://github.com/' + username + '/' + repo + '/milestones'
         };
         github.sendBoardMessage(title, robot, res, issues);
       });
@@ -91,7 +93,7 @@ module.exports = function(robot) {
   });
 
   // 'board <user/repo> !(backlog|ready|working|done)'
-  robot.respond(patterns.getAllStatusCmd, function(res) {
+  robot.hear(patterns.getAllStatusCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
     var label = res.match[4];
@@ -126,7 +128,7 @@ module.exports = function(robot) {
   });
 
   // 'board <user/repo> !mine'
-  robot.respond(patterns.getAllMineCmd, function(res) {
+  robot.hear(patterns.getAllMineCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
 
@@ -160,7 +162,7 @@ module.exports = function(robot) {
   });
 
   // 'board <user/repo> !latest'
-  robot.respond(patterns.getLatestCmd, function(res) {
+  robot.hear(patterns.getLatestCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
 
@@ -188,7 +190,7 @@ module.exports = function(robot) {
         if(err){ return console.log(err)}
         var title = {
           title: repo + ' - Latest Issues',
-          html_url: 'https://github.com/' + username + '/' + repo
+          html_url: 'https://github.com/' + username + '/' + repo + '/issues'
         };
         github.sendIssues(title, robot, res, issues);
       });
@@ -196,7 +198,7 @@ module.exports = function(robot) {
   });
 
   // 'board <user/repo> <milestone:version>'
-  robot.respond(patterns.milestoneCmd, function(res) {
+  robot.hear(patterns.milestoneCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
     var milestoneStrings = res.match[4].split(':');
@@ -239,7 +241,7 @@ module.exports = function(robot) {
   });
 
   // 'board <user/repo> <milestone:version> !(backlog|ready|working|done)'
-  robot.respond(patterns.milestoneStatusCmd, function(res) {
+  robot.hear(patterns.milestoneStatusCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
     var milestoneStrings = res.match[4].split(':');
@@ -288,7 +290,7 @@ module.exports = function(robot) {
   });
 
   // 'board <user/repo> <milestone:version> !mine'
-  robot.respond(patterns.milestoneMineCmd, function(res) {
+  robot.hear(patterns.milestoneMineCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
     var milestoneStrings = res.match[4].split(':');
@@ -330,4 +332,65 @@ module.exports = function(robot) {
     });
   });
 
+  // 'board <user/repo> <milestone:version> !new'
+  robot.hear(patterns.milestoneNewIssueCmd, function(res) {
+    var username = res.match[2];
+    var repo = res.match[3];
+    var milestoneStrings = res.match[4] ? res.match[4].split(':') : false;
+    var issueTitle = _.trim(res.match[5]);
+    var issueBody = _.trim(res.match[6]);
+    var options;
+
+    if(!defaultUser && !repo){
+      return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
+    }
+
+    if(!repo){
+      repo = username;
+      username = defaultUser;
+    }
+
+    robot.identity.findToken(res.envelope.user.name, function(err, token){
+      if(err){ return console.log(err)}
+
+      var github = new Github(token);
+
+      options = {
+        user: username,
+        repo: repo,
+        title: issueTitle,
+        body: issueBody
+      };
+
+      if(!milestoneStrings){
+        return github.createIssue(options, function(err, issue){
+          if(err){ return console.log(err)}
+
+          var title = {title: 'Issue created for ' + repo, html_url: issue.html_url};
+          github.sendIssues(title, robot, res, [issue]);
+        });
+      }
+
+      github.getMilestones(username, repo, function(err, milestones){
+        if(err){ return console.log(err)}
+
+        var matchedMilestones = findByStrings(milestones, 'title', milestoneStrings);
+        var milestone;
+
+        if(matchedMilestones.length){
+          milestone = matchedMilestones[0];
+          options.milestone = milestone.number;
+
+          github.createIssue(options, function(err, issue){
+            if(err){ return console.log(err)}
+
+            var title = {title: 'Issue created for ' + repo + ' - ' + milestone.title + ' milestone', html_url: issue.html_url};
+            github.sendIssues(title, robot, res, [issue]);
+          });
+        } else {
+          return res.send(res.random(failIntro) + ' I couldn\'t find a milestone with the following text: ' + milestoneStrings.join(', ') + '.');
+        }
+      });
+    });
+  });
 };

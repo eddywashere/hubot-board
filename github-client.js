@@ -70,6 +70,14 @@ GithubClient.prototype.getIssues = function(options, cb){
   });
 };
 
+GithubClient.prototype.createIssue = function(options, cb){
+  var github = this;
+
+  github.client.issues.create(options, function(err, issue){
+    cb(err, issue);
+  });
+};
+
 GithubClient.prototype.getBoardIssues = function(username, repo, milestone, statuses, cb){
   var github = this;
   var calls = {};
