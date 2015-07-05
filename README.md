@@ -12,10 +12,10 @@ In hubot project repo, run:
 npm install hubot-board --save
 ```
 
-This also requires a forked version of [hubot-github-identity](https://github.com/eddywashere/hubot-github-identity/commit/b1df4045e36e321e55c2a2baead5456e1d5d664f). To add that to your project, use:
+This also requires [hubot-github-identity](https://github.com/tombell/hubot-github-identity) >= `0.10.0`. To add that to your project, use:
 
 ```
-npm install --save eddywashere/hubot-github-identity#b1df4045e36e321e55c2a2baead5456e1d5d664f
+npm install --save hubot-github-identity@0.10.0
 ```
 
 Then add **hubot-board** & **hubot-github-identity** to your `external-scripts.json`:
