@@ -22,23 +22,35 @@ Then add **hubot-board** & **hubot-github-identity** to your `external-scripts.j
 
 ```json
 [
-  "hubot-github-identity"
+  "hubot-github-identity",
   "hubot-board"
 ]
 ```
 
-## Chat commands
+## Registering your github account with hubot
+
+Step 1: Create a token to access your github info as yourself
 
 ```
-hubot board <user/repo> - shows default board (isssues labeled: ready, working, done)
+curl -i https://api.github.com/authorizations -d '{"note":"token for slackbot","scopes":["repo"]}' -u “yourusername"
+```
 
-hubot board <user/repo> !backlog - shows all backlog items
+Step 2: Register your username and token
 
-hubot board <user/repo> !mine - shows all issues assigned to you
+- locally at `http://localhost:8080/github/identity`
+- production `https://HUBOT_HOSTNAME/github/identity`
 
-hubot board <user/repo> <milestone:version> - shows board for the given milestone (ex: mile-stone-name:part-two)
+Step 3: Tell hubot who you are
 
-hubot board <user/repo> <milestone:version> !backlog - show backlog issues for the given milestone
+- in a channel `hubot I am eddywashere`
+- direct message to hubot `I am eddywashere`
 
-hubot board <user/repo> <milestone:version> !mine - show issues assigned to you for the given milestone
+## Chat commands
+
+- **hubot board <user/repo>** - shows default board (isssues labeled: ready, working, done)
+- **hubot board <user/repo> !backlog** - shows all backlog items
+- **hubot board <user/repo> !mine** - shows all issues assigned to you
+- **hubot board <user/repo> <milestone:version>** - shows board for the given milestone (ex: mile-stone-name:part-two)
+- **hubot board <user/repo> <milestone:version> !backlog** - show backlog issues for the given milestone
+- **hubot board <user/repo> <milestone:version> !mine** - show issues assigned to you for the given milestone
 ```
