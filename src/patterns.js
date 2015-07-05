@@ -40,6 +40,14 @@ patterns.getAllMineCmd = new RegExp(
   patterns.endspace,
   "i");
 
+patterns.getLatestCmd = new RegExp(
+  "(" + patterns.scriptPrefix +
+  "(?:\\:[^\\s]+)?)\\s+" +
+  patterns.fullRepo +
+  "\\s+(?:!latest)" +
+  patterns.endspace,
+  "i");
+
 patterns.milestoneCmd = new RegExp(
   "(" + patterns.scriptPrefix +
   "(?:\\:[^\\s]+)?)\\s+" +

@@ -62,7 +62,11 @@ GithubClient.prototype.getIssues = function(options, cb){
   var github = this;
 
   github.client.issues.repoIssues(options, function(err, items){
-    github.getCollection(err, items, cb);
+    if(options.per_page){
+      cb(err, items);
+    } else {
+      github.getCollection(err, items, cb);
+    }
   });
 };
 

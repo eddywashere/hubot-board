@@ -10,6 +10,7 @@
 //   hubot board <user/repo> - shows default board (isssues labeled: ready, working, done)
 //   hubot board <user/repo> !backlog - shows all backlog items
 //   hubot board <user/repo> !mine - shows all issues assigned to you
+//   hubot board <user/repo> !latest - shows latest issues for a repo
 //   hubot board <user/repo> <milestone:version> - shows board for the given milestone (ex: mile-stone-name:part-two)
 //   hubot board <user/repo> <milestone:version> !backlog - show backlog issues for the given milestone
 //   hubot board <user/repo> <milestone:version> !mine - show issues assigned to you for the given milestone
@@ -78,7 +79,11 @@ module.exports = function(robot) {
       var github = new Github(token);
       github.getBoardIssues(username, repo, null, null, function(err, issues){
         if(err){ return console.log(err)};
-        github.sendBoardMessage({title: repo + ' - issue(s)'}, robot, res, issues);
+        var title = {
+          title: repo + ' - issue(s)',
+          html_url: 'https://github.com/' + username + '/' + repo
+        };
+        github.sendBoardMessage(title, robot, res, issues);
       });
     });
   });
@@ -105,7 +110,11 @@ module.exports = function(robot) {
       var github = new Github(token);
       github.getBoardIssues(username, repo, null, labels, function(err, issues){
         if(err){ return console.log(err)}
-        github.sendBoardMessage({title: repo + ' - issue(s)'}, robot, res, issues, labels);
+        var title = {
+          title: repo + ' - backlog issue(s)',
+          html_url: 'https://github.com/' + username + '/' + repo + '/labels/' + encodeURIComponent(ghUser)
+        };
+        github.sendBoardMessage(title, robot, res, issues, labels);
       });
     });
   });
@@ -135,11 +144,50 @@ module.exports = function(robot) {
       };
       github.getIssues(options, function(err, issues){
         if(err){ return console.log(err)}
-        github.sendIssues('Issues assigned to @' + ghUser, robot, res, issues);
+        var title = {
+          title: repo + ' - Issues assigned to @' + ghUser,
+          html_url: 'https://github.com/' + username + '/' + repo + '/assigned/' + ghUser
+        };
+        github.sendIssues(title, robot, res, issues);
       });
     });
   });
 
+  // 'board <user/repo> !latest'
+  robot.respond(patterns.getLatestCmd, function(res) {
+    var username = res.match[2];
+    var repo = res.match[3];
+
+    if(!defaultUser && !repo){
+      return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
+    }
+
+    if(!repo){
+      repo = username;
+      username = defaultUser;
+    }
+
+    robot.identity.findToken(res.envelope.user.name, function(err, token){
+      token = token || defaultToken;
+      if(err && !token){ return console.log(err)}
+
+      var github = new Github(token);
+      var options = {
+        user: username,
+        repo: repo,
+        per_page: 5,
+        page: 0
+      };
+      github.getIssues(options, function(err, issues){
+        if(err){ return console.log(err)}
+        var title = {
+          title: repo + ' - Latest Issues',
+          html_url: 'https://github.com/' + username + '/' + repo
+        };
+        github.sendIssues(title, robot, res, issues);
+      });
+    });
+  });
 
   // 'board <user/repo> <milestone:version>'
   robot.respond(patterns.milestoneCmd, function(res) {

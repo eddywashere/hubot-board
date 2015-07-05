@@ -64,6 +64,31 @@ describe('board', function() {
     });
   });
 
+  describe('<user/repo> !latest', function() {
+    beforeEach(function() {
+      room = helper.createRoom();
+      room.robot.identity = {
+        findToken: sinon.spy()
+      };
+    });
+
+    it("responds with all the latest issues for a repo", function() {
+      var msg = 'hubot board username/repo !latest';
+      room.user.say('me', msg);
+      expect(['me', msg]).to.deep.equal(room.messages[0]);
+      expect(room.robot.identity.findToken).to.have.been.calledWith('me');
+    });
+
+    it("suggests full user/repo when default user not set", function() {
+      var msg = 'hubot board username !latest';
+      var response = "Looks like someone didn't set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.";
+
+      room.user.say('me', msg);
+      expect(['me', msg]).to.deep.equal(room.messages[0]);
+      expect(room.messages[1][1]).to.contain(response);
+    });
+  });
+
   describe('<user/repo> !mine', function() {
     beforeEach(function() {
       room = helper.createRoom();
