@@ -48,8 +48,8 @@ Step 3: Tell hubot who you are
 ## Chat commands
 
 - **hubot board user/repo** - shows default board (isssues labeled: ready, working, done)
-- **hubot board user/repo !backlog** - shows all backlog items
+- **hubot board user/repo !(backlog|ready|working|done)** - shows all backlog items
 - **hubot board user/repo !mine** - shows all issues assigned to you
 - **hubot board user/repo <milestone:version>** - shows board for the given milestone (ex: mile-stone-name:part-two)
-- **hubot board user/repo <milestone:version> !backlog** - show backlog issues for the given milestone
+- **hubot board user/repo <milestone:version> !(backlog|ready|working|done)** - show backlog issues for the given milestone
 - **hubot board user/repo <milestone:version> !mine** - show issues assigned to you for the given milestone
