@@ -69,6 +69,7 @@ module.exports = function(robot) {
 
       var github = new Github(token);
       github.getBoardIssues(username, repo, null, null, function(err, issues){
+        if(err){ return console.log(err)};
         github.sendBoardMessage({title: repo + ' - issue(s)'}, robot, res, issues);
       });
     });
@@ -89,6 +90,7 @@ module.exports = function(robot) {
 
       var github = new Github(token);
       github.getBoardIssues(username, repo, null, labels, function(err, issues){
+        if(err){ return console.log(err)}
         github.sendBoardMessage({title: repo + ' - issue(s)'}, robot, res, issues, labels);
       });
     });
@@ -113,6 +115,7 @@ module.exports = function(robot) {
         assignee: ghUser
       };
       github.getIssues(options, function(err, issues){
+        if(err){ return console.log(err)}
         github.sendIssues('Issues assigned to @' + ghUser, robot, res, issues);
       });
     });
@@ -130,9 +133,12 @@ module.exports = function(robot) {
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
+      if(err){ return console.log(err)}
+
       var github = new Github(token);
 
       github.getMilestones(username, repo, function(err, milestones){
+        if(err){ return console.log(err)}
         var matchedMilestones = findByStrings(milestones, 'title', milestoneStrings);
         var milestone, options;
 
@@ -141,6 +147,8 @@ module.exports = function(robot) {
           options = {user: username, repo: repo, milestone: milestone.number};
 
           github.getBoardIssues(username, repo, milestone, null, function(err, issues){
+            if(err){ return console.log(err)}
+
             var title = {title: repo + ' - ' + milestone.title + ' milestone', html_url: milestone.html_url};
             github.sendBoardMessage(title, robot, res, issues);
           });
@@ -163,9 +171,13 @@ module.exports = function(robot) {
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
+      if(err){ return console.log(err)}
+
       var github = new Github(token);
 
       github.getMilestones(username, repo, function(err, milestones){
+        if(err){ return console.log(err)}
+
         var matchedMilestones = findByStrings(milestones, 'title', milestoneStrings);
         var milestone, options;
 
@@ -174,6 +186,8 @@ module.exports = function(robot) {
           options = {user: username, repo: repo, milestone: milestone.number};
 
           github.getBoardIssues(username, repo, milestone, labels, function(err, issues){
+            if(err){ return console.log(err)}
+
             var title = {title: repo + ' - ' + milestone.title + ' milestone', html_url: milestone.html_url};
             github.sendBoardMessage(title, robot, res, issues, labels);
           });
@@ -195,9 +209,13 @@ module.exports = function(robot) {
     }
 
     robot.identity.getGitHubUserAndToken(res.envelope.user.name, function(err, ghUser, token){
+      if(err){ return console.log(err)}
+
       var github = new Github(token);
 
       github.getMilestones(username, repo, function(err, milestones){
+        if(err){ return console.log(err)}
+
         var matchedMilestones = findByStrings(milestones, 'title', milestoneStrings);
         var milestone, options;
 
@@ -206,6 +224,8 @@ module.exports = function(robot) {
           options = {user: username, repo: repo, assignee: ghUser, milestone: milestone.number};
 
           github.getIssues(options, function(err, issues){
+            if(err){ return console.log(err)}
+
             var title = {title: repo + ' - ' + milestone.title + ' milestone, assigned to: ' + ghUser, html_url: milestone.html_url};
             github.sendIssues(title, robot, res, issues);
           });
