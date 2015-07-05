@@ -59,11 +59,16 @@ module.exports = function(robot) {
 
   // 'board <user/repo>'
   robot.respond(patterns.baseCmd, function(res) {
-    var username = defaultUser || res.match[2];
-    var repo = res.match[3] || res.match[2];
+    var username = res.match[2];
+    var repo = res.match[3];
 
-    if(!defaultUser && !res.match[3]){
+    if(!defaultUser && !repo){
       return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
+    }
+
+    if(!repo){
+      repo = username;
+      username = defaultUser;
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
@@ -80,12 +85,17 @@ module.exports = function(robot) {
 
   // 'board <user/repo> !backlog'
   robot.respond(patterns.getAllBacklogCmd, function(res) {
-    var username = defaultUser || res.match[2];
-    var repo = res.match[3] || res.match[2];
+    var username = res.match[2];
+    var repo = res.match[3];
     var labels = ['0 - Backlog'];
 
-    if(!defaultUser && !res.match[3]){
+    if(!defaultUser && !repo){
       return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
+    }
+
+    if(!repo){
+      repo = username;
+      username = defaultUser;
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
@@ -102,11 +112,16 @@ module.exports = function(robot) {
 
   // 'board <user/repo> !mine'
   robot.respond(patterns.getAllMineCmd, function(res) {
-    var username = defaultUser || res.match[2];
-    var repo = res.match[3] || res.match[2];
+    var username = res.match[2];
+    var repo = res.match[3];
 
-    if(!defaultUser && !res.match[3]){
+    if(!defaultUser && !repo){
       return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
+    }
+
+    if(!repo){
+      repo = username;
+      username = defaultUser;
     }
 
     robot.identity.getGitHubUserAndToken(res.envelope.user.name, function(err, ghUser, token){
@@ -128,12 +143,17 @@ module.exports = function(robot) {
 
   // 'board <user/repo> <milestone:version>'
   robot.respond(patterns.milestoneCmd, function(res) {
-    var username = defaultUser || res.match[2];
-    var repo = res.match[3] || res.match[2];
+    var username = res.match[2];
+    var repo = res.match[3];
     var milestoneStrings = res.match[4].split(':');
 
-    if(!defaultUser && !res.match[3]){
+    if(!defaultUser && !repo){
       return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
+    }
+
+    if(!repo){
+      repo = username;
+      username = defaultUser;
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
@@ -166,13 +186,18 @@ module.exports = function(robot) {
 
   // 'board <user/repo> <milestone:version> !backlog'
   robot.respond(patterns.milestoneBacklogCmd, function(res) {
-    var username = defaultUser || res.match[2];
-    var repo = res.match[3] || res.match[2];
+    var username = res.match[2];
+    var repo = res.match[3];
     var milestoneStrings = res.match[4].split(':');
     var labels = ['0 - Backlog'];
 
-    if(!defaultUser && !res.match[3]){
+    if(!defaultUser && !repo){
       return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
+    }
+
+    if(!repo){
+      repo = username;
+      username = defaultUser;
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
@@ -206,12 +231,17 @@ module.exports = function(robot) {
 
   // 'board <user/repo> <milestone:version> !mine'
   robot.respond(patterns.milestoneMineCmd, function(res) {
-    var username = defaultUser || res.match[2];
-    var repo = res.match[3] || res.match[2];
+    var username = res.match[2];
+    var repo = res.match[3];
     var milestoneStrings = res.match[4].split(':');
 
-    if(!defaultUser && !res.match[3]){
+    if(!defaultUser && !repo){
       return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
+    }
+
+    if(!repo){
+      repo = username;
+      username = defaultUser;
     }
 
     robot.identity.getGitHubUserAndToken(res.envelope.user.name, function(err, ghUser, token){

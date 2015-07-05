@@ -1,7 +1,7 @@
 {
   "name": "hubot-board",
   "description": "A lightweight kanban-ish chat bot using github issues",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "author": "Eddy Hernandez <edward.d.hernandez@gmail.com>",
   "license": "MIT",
   "keywords": "hubot, hubot-scripts, kanban, chatops, catops, huboard, bot, issues, github",

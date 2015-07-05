@@ -1,4 +1,4 @@
-# hubot-board
+# hubot-board [![Build Status](http://img.shields.io/travis/eddywashere/hubot-board/master.svg)](https://travis-ci.org/eddywashere/hubot-board)
 
 A lightweight kanban-ish chat bot for working with github issues
 
