@@ -53,4 +53,3 @@ Step 3: Tell hubot who you are
 - **hubot board <user/repo> <milestone:version>** - shows board for the given milestone (ex: mile-stone-name:part-two)
 - **hubot board <user/repo> <milestone:version> !backlog** - show backlog issues for the given milestone
 - **hubot board <user/repo> <milestone:version> !mine** - show issues assigned to you for the given milestone
-```
