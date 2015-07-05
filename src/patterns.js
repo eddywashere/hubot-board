@@ -24,11 +24,11 @@ patterns.baseCmd = new RegExp(
   patterns.endspace,
   "i");
 
-patterns.getAllBacklogCmd = new RegExp(
+patterns.getAllStatusCmd = new RegExp(
   "(" + patterns.scriptPrefix +
   "(?:\\:[^\\s]+)?)\\s+" +
   patterns.fullRepo +
-  "\\s+(?:!backlog)" +
+  "\\s+!(backlog|ready|working|done)$" +
   patterns.endspace,
   "i");
 
@@ -56,12 +56,12 @@ patterns.milestoneCmd = new RegExp(
   patterns.endspace,
   "i");
 
-patterns.milestoneBacklogCmd = new RegExp(
+patterns.milestoneStatusCmd = new RegExp(
   "(" + patterns.scriptPrefix +
   "(?:\\:[^\\s]+)?)\\s+" +
   patterns.fullRepo +
   "\\s+(?:\([-_\.0-9a-z:]+))?(?:\\s+)?" +
-  "\\s+(?:!backlog)" +
+  "\\s+!(backlog|ready|working|done)$" +
   patterns.endspace,
   "i");
 

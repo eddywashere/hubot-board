@@ -39,7 +39,7 @@ describe('board', function() {
     });
   });
 
-  describe('<user/repo> !backlog', function() {
+  describe('<user/repo> !(backlog|ready|working|done)', function() {
     beforeEach(function() {
       room = helper.createRoom();
       room.robot.identity = {
@@ -137,7 +137,7 @@ describe('board', function() {
     });
   });
 
-  describe('<user/repo> <milestone:version> !backlog', function() {
+  describe('<user/repo> <milestone:version> !(backlog|ready|working|done)', function() {
     beforeEach(function() {
       room = helper.createRoom();
       room.robot.identity = {

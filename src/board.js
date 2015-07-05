@@ -8,11 +8,11 @@
 //
 // Commands:
 //   hubot board <user/repo> - shows default board (isssues labeled: ready, working, done)
-//   hubot board <user/repo> !backlog - shows all backlog items
+//   hubot board <user/repo> !(backlog|ready|working|done) - shows all backlog items
 //   hubot board <user/repo> !mine - shows all issues assigned to you
 //   hubot board <user/repo> !latest - shows latest issues for a repo
 //   hubot board <user/repo> <milestone:version> - shows board for the given milestone (ex: mile-stone-name:part-two)
-//   hubot board <user/repo> <milestone:version> !backlog - show backlog issues for the given milestone
+//   hubot board <user/repo> <milestone:version> !(backlog|ready|working|done) - show backlog issues for the given milestone
 //   hubot board <user/repo> <milestone:version> !mine - show issues assigned to you for the given milestone
 // Notes:
 //   requires hubot-github-identity
@@ -27,6 +27,8 @@ var scriptPrefix = process.env.HUBOT_BOARD_PREFIX || 'board';
 var defaultUser = process.env.HUBOT_BOARD_DEFAULT_USER;
 var defaultToken = process.env.HUBOT_BOARD_DEFAULT_TOKEN;
 var statuses = process.env.HUBOT_BOARD_DEFAULT_STATUSES || ['1 - Ready', '2 - Working', '3 - Done'];
+var allStatuses = ['0 - Backlog'].concat(statuses);
+
 var failIntro = [
   'Argh!',
   'Sorrry.',
@@ -88,11 +90,15 @@ module.exports = function(robot) {
     });
   });
 
-  // 'board <user/repo> !backlog'
-  robot.respond(patterns.getAllBacklogCmd, function(res) {
+  // 'board <user/repo> !(backlog|ready|working|done)'
+  robot.respond(patterns.getAllStatusCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
-    var labels = ['0 - Backlog'];
+    var label = res.match[4];
+
+    var labels = _.filter(allStatuses, function(status){
+      return status.match(new RegExp(label, 'i'));
+    });
 
     if(!defaultUser && !repo){
       return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
@@ -111,8 +117,8 @@ module.exports = function(robot) {
       github.getBoardIssues(username, repo, null, labels, function(err, issues){
         if(err){ return console.log(err)}
         var title = {
-          title: repo + ' - backlog issue(s)',
-          html_url: 'https://github.com/' + username + '/' + repo + '/labels/' + encodeURIComponent(ghUser)
+          title: repo + ' - ' + label + ' issue(s)',
+          html_url: 'https://github.com/' + username + '/' + repo + '/labels/' + encodeURIComponent(labels[0])
         };
         github.sendBoardMessage(title, robot, res, issues, labels);
       });
@@ -232,12 +238,16 @@ module.exports = function(robot) {
     });
   });
 
-  // 'board <user/repo> <milestone:version> !backlog'
-  robot.respond(patterns.milestoneBacklogCmd, function(res) {
+  // 'board <user/repo> <milestone:version> !(backlog|ready|working|done)'
+  robot.respond(patterns.milestoneStatusCmd, function(res) {
     var username = res.match[2];
     var repo = res.match[3];
     var milestoneStrings = res.match[4].split(':');
-    var labels = ['0 - Backlog'];
+    var label = res.match[5];
+
+    var labels = _.filter(allStatuses, function(status){
+      return status.match(new RegExp(label, 'i'));
+    });
 
     if(!defaultUser && !repo){
       return res.send(res.random(failIntro) + ' Looks like someone didn\'t set HUBOT_BOARD_DEFAULT_USER. Try using username/repo in the meantime.')
@@ -267,7 +277,7 @@ module.exports = function(robot) {
           github.getBoardIssues(username, repo, milestone, labels, function(err, issues){
             if(err){ return console.log(err)}
 
-            var title = {title: repo + ' - ' + milestone.title + ' milestone', html_url: milestone.html_url};
+            var title = {title: repo + ' - ' + milestone.title + ' milestone, ' + label + ' issues', html_url: milestone.html_url};
             github.sendBoardMessage(title, robot, res, issues, labels);
           });
         } else {
