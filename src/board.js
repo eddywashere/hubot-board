@@ -2,6 +2,7 @@
 //   A lightweight kanban chat bot for working with github issues
 //
 // Configuration:
+//   HUBOT_BOARD_DEFAULT_TOKEN=yourtoken
 //   HUBOT_BOARD_DEFAULT_USER=yourusername
 //   HUBOT_BOARD_DEFAULT_STATUSES=['1 - Ready', '2 - Working', '3 - Done']
 //
@@ -23,6 +24,7 @@ var patterns = require('./patterns');
 var Github = require('../github-client');
 var scriptPrefix = process.env.HUBOT_BOARD_PREFIX || 'board';
 var defaultUser = process.env.HUBOT_BOARD_DEFAULT_USER;
+var defaultToken = process.env.HUBOT_BOARD_DEFAULT_TOKEN;
 var statuses = process.env.HUBOT_BOARD_DEFAULT_STATUSES || ['1 - Ready', '2 - Working', '3 - Done'];
 var failIntro = [
   'Argh!',
@@ -65,7 +67,8 @@ module.exports = function(robot) {
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
-      if(err){ return console.log(err)}
+      token = token || defaultToken;
+      if(err && !token){ return console.log(err)}
 
       var github = new Github(token);
       github.getBoardIssues(username, repo, null, null, function(err, issues){
@@ -86,7 +89,8 @@ module.exports = function(robot) {
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
-      if(err){ return console.log(err)}
+      token = token || defaultToken;
+      if(err && !token){ return console.log(err)}
 
       var github = new Github(token);
       github.getBoardIssues(username, repo, null, labels, function(err, issues){
@@ -133,7 +137,8 @@ module.exports = function(robot) {
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
-      if(err){ return console.log(err)}
+      token = token || defaultToken;
+      if(err && !token){ return console.log(err)}
 
       var github = new Github(token);
 
@@ -171,7 +176,8 @@ module.exports = function(robot) {
     }
 
     robot.identity.findToken(res.envelope.user.name, function(err, token){
-      if(err){ return console.log(err)}
+      token = token || defaultToken;
+      if(err && !token){ return console.log(err)}
 
       var github = new Github(token);
 
