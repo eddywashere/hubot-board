@@ -48,11 +48,11 @@ Step 3: Tell hubot who you are
 ## Chat commands
 
 - **!board user/repo** - shows default board (isssues labeled: ready, working, done)
-- **!board user/repo !new <title> - <body> - creates a new issue
+- **!board user/repo !new** - creates a new issue
 - **!board user/repo !(backlog|ready|working|done)** - shows all backlog items
 - **!board user/repo !mine** - shows all issues assigned to you
 - **!board user/repo milestone:version** - shows board for the given milestone (ex: mile-stone-name:part-two)
-- **!board user/repo milestone:version !new <title> - <body> - creates a new issue for a milestone
+- **!board user/repo milestone:version !new** - creates a new issue for a milestone
 - **!board user/repo milestone:version !(backlog|ready|working|done)** - show backlog issues for the given milestone
 - **!board user/repo milestone:version !mine** - show issues assigned to you for the given milestone
 
